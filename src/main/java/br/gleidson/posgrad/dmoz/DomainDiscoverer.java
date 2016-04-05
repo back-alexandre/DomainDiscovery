@@ -38,7 +38,7 @@ public class DomainDiscoverer {
 		String url = "";
 		String logDir = "";
 		if (args.length < 2) {
-			System.out.println("Argumento 1: URL para análise., Argumento 2 Diretório de log");
+			System.out.println("Argumento 1: URL para anÃ¡lise., Argumento 2 DiretÃ³rio de log");
 			return;
 		}
 		if (args.length > 0) {
@@ -169,7 +169,7 @@ public class DomainDiscoverer {
 	}
 	
 	/**
-	 * Retorna em percentuais o número de tópicos encontrados relacionados com o domínio fornecido.
+	 * Retorna em percentuais o nï¿½mero de tï¿½picos encontrados relacionados com o domï¿½nio fornecido.
 	 * @return
 	 */
 	public Float getDomainFrequencyPercent(String domain) {
