@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
@@ -37,14 +38,22 @@ public class DomainDiscoverer {
 	public static void main(String[] args) throws Exception {
 		String url = "";
 		String logDir = "";
-		if (args.length < 2) {
+		if (args.length == 0) {
+			url = JOptionPane.showInputDialog("Informe a URL para análise:", "http://www.ufsc.br");
+			logDir = JOptionPane.showInputDialog("Informe o diretório de log:");
+		} else if (args.length < 2) {
 			System.out.println("Argumento 1: URL para análise\nArgumento 2: Diretório de log");
 			return;
-		}
+		} 
+
 		if (args.length > 0) {
 			url = args[0];
-		} if (args.length > 1) {
+		} 
+		if (args.length > 1) {
 			logDir = args[1];
+		}
+		if (args.length > 2) {
+			System.out.println("Ignorando outros argumentos.");
 		}
 
 		criaDirSeNaoExiste(logDir);
