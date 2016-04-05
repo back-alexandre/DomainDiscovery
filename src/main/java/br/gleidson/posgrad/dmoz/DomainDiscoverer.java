@@ -38,7 +38,7 @@ public class DomainDiscoverer {
 		String url = "";
 		String logDir = "";
 		if (args.length < 2) {
-			System.out.println("Argumento 1: URL para análise., Argumento 2 Diretório de log");
+			System.out.println("Argumento 1: URL para análise\nArgumento 2: Diretório de log");
 			return;
 		}
 		if (args.length > 0) {
@@ -46,11 +46,27 @@ public class DomainDiscoverer {
 		} if (args.length > 1) {
 			logDir = args[1];
 		}
+
+		criaDirSeNaoExiste(logDir);
+		
 		DomainDiscoverer dd3 = new DomainDiscoverer(logDir);
 		System.out.println(dd3.getDomainFrom(url));
 		return;
 	}
 
+	private static void criaDirSeNaoExiste(String logDir) {
+		try {
+			File dir = new File(logDir);
+			if (dir.exists()) {
+				System.out.println("Diretórios já existem.");
+				return;
+			}
+			dir.mkdirs();
+			System.out.println("Diretórios criados.");
+		} catch (Exception e) {
+			System.out.println("Erro na hora de criar o diretórios.");
+		}
+	}
 	public void deleteLogFile() throws IOException {
 		log.close();
 		File file = new File(getLogFileName());
@@ -169,7 +185,7 @@ public class DomainDiscoverer {
 	}
 	
 	/**
-	 * Retorna em percentuais o n�mero de t�picos encontrados relacionados com o dom�nio fornecido.
+	 * Retorna, em percentuais, o número de tópicos encontrados relacionados com o domínio fornecido.
 	 * @return
 	 */
 	public Float getDomainFrequencyPercent(String domain) {
