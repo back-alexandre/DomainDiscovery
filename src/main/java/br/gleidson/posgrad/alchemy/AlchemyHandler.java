@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Vector;
+import java.net.URL;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
@@ -19,10 +21,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import br.gleidson.posgrad.alchemy.api.AlchemyAPI;
+import br.gleidson.posgrad.alchemy.api.AlchemyAPI_TextParams;
 import br.gleidson.posgrad.alchemy.result.AlchemyConcept;
 import br.gleidson.posgrad.alchemy.result.AlchemyEntity;
 import br.gleidson.posgrad.alchemy.result.AlchemyKeyword;
 import br.gleidson.posgrad.alchemy.result.AlchemyResult;
+
+
+import br.gleidson.posgrad.utility.FileLogger;
+import br.gleidson.posgrad.utility.HTMLLinkExtractor;
+import br.gleidson.posgrad.utility.HtmlLink;
 
 public class AlchemyHandler {
 	
@@ -89,6 +97,96 @@ public class AlchemyHandler {
 		return conceptList;
 	}
 
+	public ArrayList<AlchemyResult> getRankedConcepts(String url, FileLogger log) throws XPathExpressionException, IOException, SAXException, ParserConfigurationException {
+		ArrayList<AlchemyResult> conceptList = new ArrayList<>();
+		
+		
+
+        URL aURL = new URL("https://en.wikipedia.org/w/index.php?title=Live_Music_Capital_of_the_World&action=edit&redlink=1");
+
+        log.cleanWriteLine("protocol = " + aURL.getProtocol());
+        log.cleanWriteLine("authority = " + aURL.getAuthority());
+        log.cleanWriteLine("host = " + aURL.getHost());
+        log.cleanWriteLine("port = " + aURL.getPort());
+        log.cleanWriteLine("path = " + aURL.getPath());
+        log.cleanWriteLine("query = " + aURL.getQuery());
+        log.cleanWriteLine("filename = " + aURL.getFile());
+        log.cleanWriteLine("ref = " + aURL.getRef());
+		
+////@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        //System.exit(0);
+    ////@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		
+		Document urlFullText = null;
+		
+		AlchemyAPI_TextParams textParams = new AlchemyAPI_TextParams();
+		textParams.setExtractLinks(true);
+		
+			urlFullText = alchemyObj.URLGetText(url, textParams);
+			//System.out.println("util:"+Util.getStringFromDocument(urlFullText));
+			
+		NodeList fullTextList = urlFullText.getElementsByTagName("text");
+		//System.out.println(fullTextList.getLength()+"fullTextList:"+fullTextList.toString());
+		
+		Node n = fullTextList.item(0);
+		//System.out.println("nodevalue:"+ n.getNodeValue());
+		//System.out.println("[nodename]:"+n.getNodeName()+"[getTextContent]:"+n.getTextContent());
+
+		
+		log.cleanWriteLine("getTextContent=\n"+n.getTextContent());	
+		
+		Vector<HtmlLink> links = new HTMLLinkExtractor().grabHTMLLinks(n.getTextContent());
+		
+		log.cleanWriteLine("***** LINK GRABBER *****\n\n\n");
+		
+		// >>>>>>>>>>>> para limpar links, ver URLEncoder.encode(url,"UTF-8")
+		
+		for (HtmlLink link : links){
+			log.cleanWriteLine(link.toString());				
+			AlchemyConcept concept = new AlchemyConcept();
+			concept.text = link.getLink();
+			concept.relevance = Double.valueOf("0.8");
+			conceptList.add(concept);			
+		}
+		log.cleanWriteLine("\n\n\n***** LINK GRABBER *****");	
+		
+		
+		/*
+		 * 
+		 * 
+		 * ^^^ meu codigo a cima ^^^
+		 * 
+		 * VVV codigo do gleidson abaixo VVV
+		 * 
+		 *
+		Document urlRankedConceptsXml = null;
+		
+			urlRankedConceptsXml = alchemyObj.URLGetRankedConcepts(url);	
+		    System.out.println("urlRankedConceptsXml:"+urlRankedConceptsXml);
+		
+//		System.out.println(Util.getStringFromDocument(urlRankedConceptsXml));
+		
+		NodeList rankedList = urlRankedConceptsXml.getElementsByTagName("concept");
+			
+		for (int i = 0; i < rankedList.getLength(); i++) {						
+			AlchemyConcept concept = new AlchemyConcept();
+			NodeList entityData = rankedList.item(i).getChildNodes();
+			
+			for (int j = 0; j < entityData.getLength(); j++) {	
+				Node node = entityData.item(j);
+				
+				if (node.getNodeName().equals("text"))
+					concept.text = node.getTextContent();
+				else if (node.getNodeName().equals("relevance"))
+					concept.relevance = Double.valueOf(node.getTextContent());
+			}			
+			conceptList.add(concept);
+		}
+		*/
+		return conceptList;
+	}
+	
+	
 	public ArrayList<AlchemyResult> getRankedKeywords(String url) throws XPathExpressionException, IOException, SAXException, ParserConfigurationException {
 		ArrayList<AlchemyResult> keywordList = new ArrayList<>();
 		Document urlRankedKeywordsXml = alchemyObj.URLGetRankedKeywords(url);

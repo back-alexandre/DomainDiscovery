@@ -38,10 +38,11 @@ public class DomainDiscoverer {
 	public static void main(String[] args) throws Exception {
 		String url = "";
 		String logDir = "";
-		if (args.length == 0) {
+		/*// se nao informa parametros, pede com J Option Pane
+		 if (args.length == 0) {
 			url = JOptionPane.showInputDialog("Informe a URL para análise:", "http://www.ufsc.br");
 			logDir = JOptionPane.showInputDialog("Informe o diretório de log:");
-		} else if (args.length < 2) {
+		} else */if (args.length < 2) {
 			System.out.println("Argumento 1: URL para análise\nArgumento 2: Diretório de log");
 			return;
 		} 
@@ -53,7 +54,7 @@ public class DomainDiscoverer {
 			logDir = args[1];
 		}
 		if (args.length > 2) {
-			System.out.println("Ignorando outros argumentos.");
+			System.out.println("Ignorando demais argumentos.");
 		}
 
 		criaDirSeNaoExiste(logDir);
@@ -67,13 +68,13 @@ public class DomainDiscoverer {
 		try {
 			File dir = new File(logDir);
 			if (dir.exists()) {
-				System.out.println("Diretórios já existem.");
+				System.out.println("Diretórios de log já existem.");
 				return;
 			}
 			dir.mkdirs();
-			System.out.println("Diretórios criados.");
+			System.out.println("Diretórios de log criados.");
 		} catch (Exception e) {
-			System.out.println("Erro na hora de criar o diretórios.");
+			System.out.println("Erro na hora de criar o diretórios de log.");
 		}
 	}
 	public void deleteLogFile() throws IOException {
@@ -176,7 +177,10 @@ public class DomainDiscoverer {
 
 	public ArrayList<FreebaseResult> getTopicsFromURL(String url) throws IOException, XPathExpressionException, SAXException, ParserConfigurationException {
 		ArrayList<ConceptInstance> instances = new ArrayList<>();
+		//Metodo Gleidson
 		ArrayList<AlchemyResult> rankedConcepts = alchemyHandler.getRankedConcepts(url);		
+		//Meu metodo passando diretorio de log para poder escrever de dentro do alchemy
+		//ArrayList<AlchemyResult> rankedConcepts = alchemyHandler.getRankedConcepts(url, log);
 		for (AlchemyResult alchemyResult : rankedConcepts) {
 			ConceptInstance instance = new ConceptInstance();
 			instance.text = alchemyResult.text;			
